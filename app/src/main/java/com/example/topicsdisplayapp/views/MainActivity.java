@@ -9,6 +9,7 @@ import com.example.topicsdisplayapp.viewmodels.StoriesViewModel;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshList;
     private HitsAdapter adapter;
     private StoriesViewModel storiesViewModel;
+    private Toolbar toolbar;
+    private long count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +58,19 @@ public class MainActivity extends AppCompatActivity {
     void loadData(){
         rvList.smoothScrollToPosition(0);
         storiesViewModel.getStoryHits(1);
+//        count = storiesViewModel.getSelectedStories(true);
+        updateCount(count);
+    }
+
+    private void updateCount(long count) {
+        toolbar.setTitle( count == 0 ? getString(R.string.app_name) : count + " Selected");
     }
 
     private void initAdapter() {
-        adapter = new HitsAdapter();
+        adapter = new HitsAdapter(hit -> {
+            storiesViewModel.updateModel(hit);
+            updateCount(count++);
+        });
         rvList.setLayoutManager(new LinearLayoutManager(this));
         rvList.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -76,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private void initViews() {
         rvList = findViewById(R.id.list_post);
         swipeRefreshList = findViewById(R.id.swipe_ref_lyt);
+        toolbar = findViewById(R.id.my_toolbar);
     }
 
     @Override

@@ -23,28 +23,28 @@ public class HitsRepository {
     HitsDao hitsDao;
     private static HitsRepository instance;
 
-    private HitsRepository(Context context){
+    private HitsRepository(Context context) {
         hitsDao = HitsDatabase.getInstance(context).getHitsDao();
     }
 
-    public static HitsRepository getInstance(Context context){
-        if (instance == null){
+    public static HitsRepository getInstance(Context context) {
+        if (instance == null) {
             instance = new HitsRepository(context);
         }
         return instance;
     }
 
-    public LiveData<Resource<List<Hits>>> getHits(final int page){
-        return new NetworkBoundResource<List<Hits>, HitsResponse>(AppExecutors.getInstance()){
+    public LiveData<Resource<List<Hits>>> getHits(final int page) {
+        return new NetworkBoundResource<List<Hits>, HitsResponse>(AppExecutors.getInstance()) {
 
             @Override
             protected void saveCallResult(HitsResponse item) {
-                if (item.getHits() != null){
+                if (item.getHits() != null) {
                     Hits[] hits = new Hits[item.getHits().size()];
 
                     int index = 0;
-                    for (long rowId: hitsDao.insertHits(item.getHits().toArray(hits))){
-                        if (rowId == -1){
+                    for (long rowId : hitsDao.insertHits(item.getHits().toArray(hits))) {
+                        if (rowId == -1) {
                             hitsDao.update(
                                     hits[index].getObjectID(),
                                     hits[index].getTitle(),
@@ -52,7 +52,7 @@ public class HitsRepository {
                                     hits[index].getIsSelected()
                             );
                         }
-                        index ++;
+                        index++;
                     }
                 }
             }
@@ -76,6 +76,18 @@ public class HitsRepository {
                         );
             }
         }.getAsLiveData();
+    }
+
+//    public long getCount(boolean ofSelected) {
+//        AppExecutors.getInstance().getmDiskIO().execute(
+//                () -> hitsDao.getNumberOfStories(ofSelected)
+//        );
+//    }
+
+    public void update(Hits hits) {
+        AppExecutors.getInstance().getmDiskIO().execute(() ->
+                hitsDao.update(hits.getObjectID(), hits.getTitle(), hits.getCreated_at(),
+                hits.getIsSelected()));
     }
 
 }

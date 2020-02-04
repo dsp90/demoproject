@@ -23,4 +23,7 @@ public interface HitsDao {
     @Query("SELECT * FROM hits LIMIT(:page * 20)")
     LiveData<List<Hits>> getList(int page);
 
+    @Query("SELECT COUNT(*) FROM hits WHERE isSelected = :isSelected")
+    long getNumberOfStories(boolean isSelected);
+
 }

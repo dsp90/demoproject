@@ -94,6 +94,14 @@ public class StoriesViewModel extends AndroidViewModel {
         });
     }
 
+//    public long getSelectedStories(boolean isSelected){
+//        return hitsRepository.getCount(isSelected);
+//    }
+
+    public void updateModel(Hits hits){
+        hitsRepository.update(hits);
+    }
+
     public void cancelRequest(){
         if (isPerformingQuery){
             cancelRequest = true;
