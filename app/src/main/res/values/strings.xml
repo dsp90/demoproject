@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TopicsDisplayApp</string>
+    <string name="something_wrong">Problem loading!</string>
 </resources>
